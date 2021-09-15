@@ -8,11 +8,24 @@ class tile {
       this.x = x;
       this.y = y;
       this.w = w;
+	  this.color = color(0, 0, 0);	//-1 off, 1 on
     }
     draw() {
-        rect(this.x, this.y, this.w, this.w);
+		fill(this.color);
+        rect(offset + this.x, offset + this.y, this.w, this.w, 10);
     }
+	toggle() {
+		if (this.color == color(0, 0, 0)) {
+			this.color = color(255, 255, 255);
+		} else {
+			this.color = color(0, 0, 0);
+		}
+	}
 }
+
+let rects_per_row;
+let num_rows;
+let offset = 10;
 
 class grid {
 	constructor(){
@@ -23,9 +36,13 @@ class grid {
 			this.tiles[i].draw()
 		}
 	}
-	gen_tiles(w, num) {
-		for (let i = 0; i < num; i++) {
-			this.tiles.push(new tile(i * (w + 10) + 10, 10, w));
+	gen_tiles(w) {
+		rects_per_row = Math.floor(windowWidth / (offset + w));
+		num_rows = Math.floor(windowHeight / (offset + w));
+		for (var row = 0; row < num_rows; row++) {
+			for (var rect = 0; rect < rects_per_row; rect++) {
+				this.tiles.push(new tile(offset * rect + w * rect,  offset * row + w * row, w));
+			}
 		}
 	}
 }
@@ -49,24 +66,22 @@ function windowResized() {
 	centerCanvas();
 }
 
-let test;
-/* p5 Setup function */
+let my_grid;/* p5 Setup function */
 function setup() {
 	// Create the canvas
 	cnv = createCanvas(windowWidth, windowHeight);
 	// Center the Canvas
 	centerCanvas();
-	test = new grid();
-	test.gen_tiles(50, 5);
+	my_grid = new grid();
+	my_grid.gen_tiles(50);
 }
 
 /* p5 draw function */
 function draw() {
-	// Remove the ugly stroke from the rectangle
-	noStroke();
+	// Pure white stroke
+	stroke(255, 255, 255);
 	// Set the background to black
 	background(0);
-	fill(color(255, 255, 255));
-	test.draw();
+	my_grid.draw();
 	sleep(0.5);
 }
