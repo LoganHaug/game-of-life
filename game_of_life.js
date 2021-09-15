@@ -23,9 +23,8 @@ class tile {
 	}
 }
 
-let rects_per_row;
-let num_rows;
-let offset = 10;
+const offset = 10;
+const w = 50;
 
 class grid {
 	constructor(){
@@ -36,12 +35,21 @@ class grid {
 			this.tiles[i].draw()
 		}
 	}
-	gen_tiles(w) {
-		rects_per_row = Math.floor(windowWidth / (offset + w));
-		num_rows = Math.floor(windowHeight / (offset + w));
+	gen_tiles() {
+		var rects_per_row = Math.floor(windowWidth / (offset + w));
+		var num_rows = Math.floor(windowHeight / (offset + w));
 		for (var row = 0; row < num_rows; row++) {
 			for (var rect = 0; rect < rects_per_row; rect++) {
 				this.tiles.push(new tile(offset * rect + w * rect,  offset * row + w * row, w));
+			}
+		}
+	}
+	toggle(x, y) {
+		for (var grid_tile in this.tiles) {
+			grid_tile = this.tiles[grid_tile];
+			if ((grid_tile.x <= x || grid_tile.x * w >= x) && (grid_tile.y <= y || grid_tile.y * w >= y)) {
+				console.log(grid_tile);
+				grid_tile.toggle();
 			}
 		}
 	}
@@ -66,14 +74,15 @@ function windowResized() {
 	centerCanvas();
 }
 
-let my_grid;/* p5 Setup function */
+/* p5 Setup function */
+let my_grid;
 function setup() {
 	// Create the canvas
 	cnv = createCanvas(windowWidth, windowHeight);
 	// Center the Canvas
 	centerCanvas();
 	my_grid = new grid();
-	my_grid.gen_tiles(50);
+	my_grid.gen_tiles();
 }
 
 /* p5 draw function */
@@ -84,4 +93,8 @@ function draw() {
 	background(0);
 	my_grid.draw();
 	sleep(0.5);
+}
+
+function mousePressed() {
+	my_grid.toggle(mouseX, mouseY);
 }
