@@ -8,16 +8,19 @@ class tile {
       this.x = x;
       this.y = y;
       this.w = w;
-	  this.color = color(0, 0, 0);	//-1 off, 1 on
+	  this.color = color(0, 0, 0);
+	  this.state = -1;	//-1 off, 1 on
     }
     draw() {
 		fill(this.color);
-        rect(offset + this.x, offset + this.y, this.w, this.w, 10);
+        rect(this.x, this.y, this.w, this.w, 10);
     }
 	toggle() {
-		if (this.color == color(0, 0, 0)) {
+		if (this.state == -1) {
+			this.state = 1;
 			this.color = color(255, 255, 255);
 		} else {
+			this.state = -1;
 			this.color = color(0, 0, 0);
 		}
 	}
@@ -40,17 +43,22 @@ class grid {
 		var num_rows = Math.floor(windowHeight / (offset + w));
 		for (var row = 0; row < num_rows; row++) {
 			for (var rect = 0; rect < rects_per_row; rect++) {
-				this.tiles.push(new tile(offset * rect + w * rect,  offset * row + w * row, w));
+				this.tiles.push(new tile(offset + offset * rect + w * rect,  offset + offset * row + w * row, w));
 			}
 		}
 	}
 	toggle(x, y) {
+		var g_tile;
 		for (var grid_tile in this.tiles) {
-			grid_tile = this.tiles[grid_tile];
-			if ((grid_tile.x <= x || grid_tile.x * w >= x) && (grid_tile.y <= y || grid_tile.y * w >= y)) {
-				console.log(grid_tile);
-				grid_tile.toggle();
+			g_tile = this.tiles[grid_tile];
+
+			if (x < g_tile.x ||
+				x > (g_tile.x + w) ||
+				y < g_tile.y ||
+				y > (g_tile.y + w)) {
+				continue;
 			}
+			g_tile.toggle();
 		}
 	}
 }
